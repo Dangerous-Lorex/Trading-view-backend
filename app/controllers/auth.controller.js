@@ -350,7 +350,7 @@ exports.forgotpassword = async (req, res) => {
   });
   try {
     await transporter.sendMail(mailOptions);
-    res.send('An e-mail has been sent to ' + user.email + ' with further instructions.');
+    res.send({ message: 'An e-mail has been sent to ' + user.email + ' with further instructions. \n Please check your mail inbox.', status: 200 });
   } catch (error) {
     console.error("Error sending email:", error);
     res.status(500).send('Error sending email');
