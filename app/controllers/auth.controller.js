@@ -145,6 +145,13 @@ exports.signin = async (req, res) => {
       });
     }
 
+    if (user.confirmRegisterStatus !== true) {
+      return res.status(401).send({
+        accessToken: null,
+        message: "Please confirm your register!"
+      });
+    }
+
     var token = jwt.sign({ id: user._id }, config.secret, { // Added token generation
       expiresIn: 86400 // 24 hours
     });
