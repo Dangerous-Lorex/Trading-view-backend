@@ -148,7 +148,7 @@ exports.signin = async (req, res) => {
     if (user.confirmRegisterStatus !== true) {
       return res.status(401).send({
         accessToken: null,
-        message: "Please confirm your register!"
+        message: "Please confirm your register in your mail inbox!"
       });
     }
 
@@ -357,9 +357,9 @@ exports.forgotpassword = async (req, res) => {
   }
 }
 exports.resetpassword = async (req, res) => {
-  const { token } = req.query;
-  const { newPWD } = req.body;
-  console.log("token:", token)
+  const { token } = req.body;
+  const { password } = req.body;
+  console.log("token:", token, "password:", password)
   const user = await User.findOne({
     resetPasswordToken: token,
     resetPasswordExpires: { $gt: Date.now() }
@@ -369,12 +369,12 @@ exports.resetpassword = async (req, res) => {
     return res.status(400).send('Password reset token is invalid or has expired.');
   }
 
-  user.password = bcrypt.hashSync(newPWD, 8);
+  user.password = bcrypt.hashSync(password, 8);
   user.resetPasswordToken = undefined;
   user.resetPasswordExpires = undefined;
 
   await user.save();
-  res.send('Your password has been updated.');
+  res.send({ message: 'Your password has been updated.', status: 200 });
 }
 
 exports.confirmRegister = async (req, res) => {
