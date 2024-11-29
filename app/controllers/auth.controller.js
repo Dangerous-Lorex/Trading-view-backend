@@ -50,8 +50,8 @@ exports.signup = async (req, res) => {
     const mailOptions = {
       to: user.email,
       from: 'noreply@tbtrading.com',
-      subject: 'TBTrading Account Regiter',
-      text: 'TBTrading Account Regitser',
+      subject: 'TBTrading Account Register',
+      text: 'TBTrading Account Register',
       html: `
         <html>
         <body style="background-color: #eafbfB; font-family: sans-serif; padding: 0; margin: 0;">
@@ -66,6 +66,9 @@ exports.signup = async (req, res) => {
                     <td bgcolor="#ffffff" style="padding: 40px 30px 40px 30px;">
                         <p style="font-size: 16px;">Hi ${user.username},</p>
                         <p style="font-size: 16px;">Welcome to TBTrading! Your UID is <strong>${uniqueId}</strong>.</p>
+                        <button style="background-color: rgba(32, 101, 209, 0.9); color: white; width: 312px; height: 48px; border-radius: 8px; font-size: 16px; text-decoration: none; display: inline-block; line-height: 48px; text-align: center;">
+                          <strong>Confirm</strong>
+                        </button>
                         <p style="font-size: 16px;">Please note this uniqueID for using TBTrading better</p>
                         <p style="font-size: 16px;">If you did not request this, please ignore this email or contact our support team if you have any questions.</p>                              
                         <p style="font-size: 16px;">Thank you.</p>                        
