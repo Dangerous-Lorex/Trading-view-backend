@@ -33,7 +33,8 @@ exports.signup = async (req, res) => {
       uid: uniqueId,
       role: req.body.isAdmin ? 'admin' : 'user',
       createdAt: new Date(),
-      updatedAt: new Date()
+      updatedAt: new Date(),
+      confirmRegisterStatus: false
     });
     const org = await Organization.findOne({ title: req.body.organization });
     if (!org) {
@@ -66,7 +67,7 @@ exports.signup = async (req, res) => {
                     <td bgcolor="#ffffff" style="padding: 40px 30px 40px 30px;">
                         <p style="font-size: 16px;">Hi ${user.username},</p>
                         <p style="font-size: 16px;">Welcome to TBTrading! Your UID is <strong>${uniqueId}</strong>.</p>
-                        <button style="background-color: rgba(32, 101, 209, 0.9); color: white; width: 312px; height: 48px; border-radius: 8px; font-size: 16px; text-decoration: none; display: inline-block; line-height: 48px; text-align: center;">
+                        <button style="background-color: rgba(32, 101, 209, 0.9); color: white; width: 312px; height: 48px; border-radius: 8px; font-size: 16px; text-decoration: none; display: inline-block; line-height: 48px; text-align: center;" onClick="window.location.href='https://t78.ch/apps/tb-trading-bot/#/confirm-register?uid=${uniqueId}'">
                           <strong>Confirm</strong>
                         </button>
                         <p style="font-size: 16px;">Please note this uniqueID for using TBTrading better</p>
@@ -183,7 +184,8 @@ exports.googleSignin = async (req, res) => {
           role: 'user',
           uid: uniqueId,
           createdAt: new Date(),
-          updatedAt: new Date()
+          updatedAt: new Date(),
+          confirmRegisterStatus: false
         })
         await saveData.save();
 
@@ -363,4 +365,19 @@ exports.resetpassword = async (req, res) => {
 
   await user.save();
   res.send('Your password has been updated.');
+}
+
+exports.confirmRegister = async (req, res) => {
+  try {
+    const { uid } = req.params;
+    const user = await User.findOne({ uid: uid });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    user.confirmRegisterStatus = true;
+    await user.save();
+    res.send({ status: 200, message: "Confirm Register" });
+  } catch (error) {
+    res.status(500).send({ status: 500, message: error.message });
+  }
 }

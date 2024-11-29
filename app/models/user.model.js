@@ -23,7 +23,8 @@ const User = mongoose.model(
     resetPasswordToken: String,
     resetPasswordExpires: Date,
     createdAt: Date,
-    updatedAt: Date
+    updatedAt: Date,
+    confirmRegisterStatus: Boolean
   })
 );
 
