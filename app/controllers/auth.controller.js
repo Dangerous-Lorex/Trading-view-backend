@@ -187,31 +187,16 @@ exports.googleSignin = async (req, res) => {
       const user = await User.findOne({ email: payload.email })
 
       if (!user) {
-        const uniqueId = await generateUniqueId();
-        const saveData = new User({
-          username: payload.name,
-          email: payload.email,
-          role: 'user',
-          uid: uniqueId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          confirmRegisterStatus: false
-        })
-        await saveData.save();
-
-        const resUser = await User.findOne({ email: payload.email })
-
-        var resToken = jwt.sign({ id: resUser._id }, config.secret, { // Added token generation
-          expiresIn: 86400 // 24 hours
+        return res.status(401).send({
+          status: 401,
+          message: "Please register your account first!"
         });
+      }
 
-        return res.status(200).send({
-          id: resUser._id,
-          username: resUser.username,
-          email: resUser.email,
-          role: resUser.role,
-          accessToken: resToken,
-          vd: (resUser.role === 'user' && resUser.viewdetail === 0 ? 0 : 1),
+      if (user.confirmRegisterStatus !== true) {
+        return res.status(401).send({
+          status: 401,
+          message: "Please confirm your register in your mail inbox!"
         });
       }
 
@@ -226,13 +211,15 @@ exports.googleSignin = async (req, res) => {
         role: user.role,
         accessToken: resToken,
         vd: (user.role === 'user' && user.viewdetail === 0 ? 0 : 1),
+        status: 200,
+        message: "User was signed in successfully!"
       });
 
     } else {
-      res.status(400).json({ error: 'Invalid token payload' });
+      res.status(400).json({ status: 400, message: 'Please try again later!' });
     }
   } catch (error) {
-    res.status(401).json({ error: 'Invalid token' });
+    res.status(401).json({ status: 401, message: 'Please try again later!' });
   }
 }
 
@@ -252,10 +239,73 @@ exports.googleSignup = async (req, res) => {
       const user = await User.findOne({ email: payload.email })
 
       if (!user) {
+        const uniqueId = await generateUniqueId();
+        const saveData = new User({
+          username: payload.name,
+          email: payload.email,
+          role: 'user',
+          uid: uniqueId,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          confirmRegisterStatus: false
+        })
+        await saveData.save();
 
+        const mailOptions = {
+          to: user.email,
+          from: 'noreply@tbtrading.com',
+          subject: 'TBTrading Account Register',
+          text: 'TBTrading Account Register',
+          html: `
+            <html>
+            <body style="background-color: #eafbfB; font-family: sans-serif; padding: 0; margin: 0;">
+                <table align="center" border="0" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; background-color: #eafbfB;">
+                    <tr>
+                        <td align="center" bgcolor="#eafbfB" style="padding: 40px 0 30px 0;">
+                            <h1 style="color: rgba(32, 101, 209, 0.9); margin: 0;">Trading</h1>
+                            <h4 style="color: rgba(32, 101, 209, 0.9); margin: 0;">Welcome to Trading!</h4>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td bgcolor="#ffffff" style="padding: 40px 30px 40px 30px;">
+                            <p style="font-size: 16px;">Hi ${user.username},</p>
+                            <p style="font-size: 16px;">Welcome to TBTrading! Your UID is <strong>${uniqueId}</strong>.</p>
+                            <div style="display: flex; justify-content: center; margin-top: 20px;">
+                              <a href="https://t78.ch/apps/tb-trading-bot/#/confirm-register?uid=${uniqueId}" 
+                                style="background-color: rgba(32, 101, 209, 0.9); color: white; width: 312px; height: 48px; border-radius: 8px; font-size: 16px; text-decoration: none; display: inline-block; line-height: 48px; text-align: center;">
+                                <strong>Confirm</strong>
+                              </a>
+                            </div>
+                            <p style="font-size: 16px;">Please note this uniqueID for using TBTrading better</p>
+                            <p style="font-size: 16px;">If you did not request this, please ignore this email or contact our support team if you have any questions.</p>                              
+                            <p style="font-size: 16px;">Thank you.</p>                        
+                        </td>
+                    </tr>
+                    <tr style="height:40px"></tr>
+                </table>
+            </body>
+            </html>
+            `
+        };
+        const transporter = nodemailer.createTransport({
+          service: "Gmail",
+          host: "smtp.gmail.com",
+          port: 465,
+          secure: true,
+          auth: {
+            user: "adev@gmaxfunding.com",
+            pass: "fase qvem gdtq nnyn"
+          }
+        });
+
+        await transporter.sendMail(mailOptions);
+        return res.status(200).send({
+          status: 200,
+          message: "User was registered successfully!"
+        });
       }
 
-      res.status(200).send({
+      return res.status(200).send({
         status: 200,
         message: "User already exists!"
       });
