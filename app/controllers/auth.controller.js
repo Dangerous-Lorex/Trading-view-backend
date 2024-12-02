@@ -305,8 +305,8 @@ exports.googleSignup = async (req, res) => {
         });
       }
 
-      return res.status(200).send({
-        status: 200,
+      return res.status(201).send({
+        status: 201,
         message: "User already exists!"
       });
 
