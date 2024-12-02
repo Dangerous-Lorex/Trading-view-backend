@@ -252,7 +252,7 @@ exports.googleSignup = async (req, res) => {
         await saveData.save();
 
         const mailOptions = {
-          to: user.email,
+          to: payload.email,
           from: 'noreply@tbtrading.com',
           subject: 'TBTrading Account Register',
           text: 'TBTrading Account Register',
@@ -268,7 +268,7 @@ exports.googleSignup = async (req, res) => {
                     </tr>
                     <tr>
                         <td bgcolor="#ffffff" style="padding: 40px 30px 40px 30px;">
-                            <p style="font-size: 16px;">Hi ${user.username},</p>
+                            <p style="font-size: 16px;">Hi ${payload.name},</p>
                             <p style="font-size: 16px;">Welcome to TBTrading! Your UID is <strong>${uniqueId}</strong>.</p>
                             <div style="display: flex; justify-content: center; margin-top: 20px;">
                               <a href="https://t78.ch/apps/tb-trading-bot/#/confirm-register?uid=${uniqueId}" 
