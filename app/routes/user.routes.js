@@ -10,4 +10,5 @@ module.exports = function (app) {
   });
 
   app.get("/api/user/user-list", controller.getUserList);
+  app.post("/api/user/update-user", controller.updateUser);
 };

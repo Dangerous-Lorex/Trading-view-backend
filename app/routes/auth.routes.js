@@ -34,4 +34,5 @@ module.exports = function (app) {
   app.post("/api/auth/forgot-password", controller.forgotpassword);
   app.post("/api/auth/reset-password", controller.resetpassword);
   app.get("/api/auth/confirm-register/:uid", controller.confirmRegister);
+  app.post("/api/auth/change-password", controller.changePassword);
 };

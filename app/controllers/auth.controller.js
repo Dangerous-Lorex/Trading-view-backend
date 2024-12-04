@@ -213,6 +213,7 @@ exports.googleSignin = async (req, res) => {
         role: user.role,
         accessToken: resToken,
         vd: (user.role === 'user' && user.viewdetail === 0 ? 0 : 1),
+        organization: user.organization !== null && user.organization !== undefined ? user.organization.title : null,
         status: 200,
         message: "User was signed in successfully!"
       });
@@ -439,6 +440,25 @@ exports.confirmRegister = async (req, res) => {
     user.confirmRegisterStatus = true;
     await user.save();
     res.send({ status: 200, message: "Confirm Register" });
+  } catch (error) {
+    res.status(500).send({ status: 500, message: error.message });
+  }
+}
+
+exports.changePassword = async (req, res) => {
+  try {
+    const { id, currentPassword, newPassword } = req.body;
+    const user = await User.findOne({ _id: id });
+    if (!user) {
+      return res.status(404).send('User not found');
+    }
+    const isMatch = bcrypt.compareSync(currentPassword, user.password);
+    if (!isMatch) {
+      return res.status(400).send('Current password is incorrect');
+    }
+    user.password = bcrypt.hashSync(newPassword, 8);
+    await user.save();
+    res.send({ status: 200, message: "Change Password Successfully" });
   } catch (error) {
     res.status(500).send({ status: 500, message: error.message });
   }
