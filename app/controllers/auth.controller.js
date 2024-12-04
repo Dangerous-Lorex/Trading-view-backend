@@ -50,7 +50,10 @@ exports.signup = async (req, res) => {
     await user.save(); // Use await for saving the user
     const mailOptions = {
       to: user.email,
-      from: 'noreply@tbtrading.com',
+      from: {
+        name: 'TB Trading', // This will show as the sender name
+        address: 'noreply@tbtrading.com' // This will show as the sender email
+      },
       subject: 'TBTrading Account Register',
       text: 'TBTrading Account Register',
       html: `
@@ -92,17 +95,16 @@ exports.signup = async (req, res) => {
       auth: {
         user: "adev@gmaxfunding.com",
         pass: "fase qvem gdtq nnyn"
+      },
+      tls: {
+        rejectUnauthorized: false
+      },
+      // This allows you to use a different "from" address than the authenticated sender
+      envelope: {
+        from: "adev@gmaxfunding.com", // The actual Gmail address
+        to: user.email
       }
     });
-    // const transporter = nodemailer.createTransport({
-    //   host: "server58.hostfactory.ch",
-    //   port: 465,
-    //   secure: true,
-    //   auth: {
-    //     user: "Trading@tb-software.ch",
-    //     pass: "ArU9yBY9EZY6"
-    //   }
-    // });
     const info = await transporter.sendMail(mailOptions);
     console.log('Email sent: ' + info.response);
     res.send({ message: "User was registered successfully!", status: 200 });
